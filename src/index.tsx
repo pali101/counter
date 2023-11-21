@@ -13,6 +13,10 @@ const root = ReactDOM.createRoot(
 //   </React.StrictMode>
 // );
 
+declare global {
+  interface Window { aptos: any; }
+}
+
 window.addEventListener('load', () => {
   root.render(
     <React.StrictMode>

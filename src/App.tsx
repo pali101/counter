@@ -3,6 +3,7 @@ import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
 
 function App() {
   const [address, setAddress] = useState<string | null>(null);
+  const [count, setCount] = useState(0);
 
   /**
    * Initiate the wallet connection
@@ -17,25 +18,26 @@ function App() {
       // Handle error (show a message to the user, etc.)
     }
   };
-  return (
-    <div className="container mt-5 text-center">
-      <h1 className="mb-4">Connect your wallet</h1>
-      {address ? (
-        <div>
-          <p className="lead">Connected Account Address:</p>
-          <code className="h4">{address}</code>
-        </div>
-      ) : (
-        <div>
-          {/* <p className="lead">Connect your wallet to get started</p> */}
-          <button className="btn btn-primary btn-lg" onClick={connectWallet}>
-            Connect Wallet
-          </button>
-        </div>
-      )}
-    </div>
-  );
-      }
+  if (address === null) {
+    return (
+      <div className="container mt-5 text-center">
+        <h1 className="mb-4">Connect your wallet</h1>
+        {address ? (
+          <div>
+            <p className="lead">Connected Account Address:</p>
+            <code className="h4">{address}</code>
+          </div>
+        ) : (
+          <div>
+            {/* <p className="lead">Connect your wallet to get started</p> */}
+            <button className="btn btn-primary btn-lg" onClick={connectWallet}>
+              Connect Wallet
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  }
 //   return (
 //     <div className="App">
 //       {address ? (
@@ -48,25 +50,27 @@ function App() {
 //     </div>
 //   );
 // }
-  // const [count, setCount] = useState(0);
+
   // const connectWallet = useState(false);
-  // return (
-  //   <div className="container my-5">
-  //     <div className="card text-center my-5">
-  //       <div className="card-body">
-  //         <h1>Counter</h1>
-  //         <div className="my-5">
-  //           <h2 className="my-5">{count}</h2>
-  //           <button className="btn btn-success mx-3" 
-  //           onClick={() => setCount(count + 1)}
-  //           style={{ borderRadius: '50%', width: '120px', height: '120px', padding: '0' }}>
-  //             Increment Counter
-  //             </button>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   </div>
-  // );
-// }
+  else {
+  return (
+    <div className="container my-5">
+      <div className="card text-center my-5">
+        <div className="card-body">
+          <h1>Counter</h1>
+          <div className="my-5">
+            <h2 className="my-5">{count}</h2>
+            <button className="btn btn-success mx-3" 
+            onClick={() => setCount(count + 1)}
+            style={{ borderRadius: '50%', width: '120px', height: '120px', padding: '0' }}>
+              Increment Counter
+              </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+}
 
 export default App;
