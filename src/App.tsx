@@ -4,15 +4,17 @@ import { Types, AptosClient, Provider, Network } from 'aptos';
 import { useWallet } from '@aptos-labs/wallet-adapter-react';
 import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
 
+export const provider = new Provider(Network.DEVNET);
+export const moduleAddress = "0xa88897f762d534368fd752ddc32c1190105b3b612f805efd83498a7d5904f446";
+
 
 function App() {
   const [address, setAddress] = useState<string | null>(null);
   const [count, setCount] = useState(0);
-  const provider = new Provider(Network.DEVNET);
-  const { account, signTransaction, signAndSubmitTransaction } = useWallet();
+  const { account, signAndSubmitTransaction } = useWallet();
 
-  const moduleAddress = "0xa88897f762d534368fd752ddc32c1190105b3b612f805efd83498a7d5904f446";
-  const fetchCounter = async () => {
+  const fetchCounter = () => {
+    setInterval(async () => {
     if (!account) return;
 
     try {
@@ -25,6 +27,7 @@ function App() {
     catch (e) {
       console.error(e);
     }
+  }, 3000);
   }
 
 
@@ -48,17 +51,10 @@ function App() {
     // const entryFunctionPayload = new TxnBuilderTypes.Tra
     // const raw = await provider.generateTransactionData(account.address, entryFunctionPayload);
     try{
-      // const response = await signAndSubmitTransaction({
-      //   type: "entry_function_payload",
-      //   function: `${moduleAddress}::Counter::click`,
-      //   type_arguments:[],
-      //   arguments: [],
-      // });
-      // alert("error1 "+ response)
-      // await provider.waitForTransaction(response.hash);
-      // console.log(response);
-      // setCount(new_value);
-      const response = await signAndSubmitTransaction(payload);
+      console.log({account})
+      console.log(signAndSubmitTransaction)
+      const response = await signAndSubmitTransaction(payload as any);
+      console.log(response);
       await provider.waitForTransaction(response.hash);
       setCount((count) => count + 1);
     }
@@ -117,6 +113,9 @@ function App() {
                 </div>
               </div>
             </div> )}
+
+            
+
           </div>)
 
   }
