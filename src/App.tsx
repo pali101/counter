@@ -33,7 +33,7 @@ function App() {
 
   const handleClick = async () => {
     if(!account) return;
-    const new_value = count + 1;
+    const new_value = Number(count) + 1;
     // const payload   = {
     //   type: "entry_function_payload",
     //   function: `${moduleAddress}::Counter::click`,
@@ -55,7 +55,7 @@ function App() {
       const response = await signAndSubmitTransaction(payload as any);
       console.log(response);
       await provider.waitForTransaction(response.hash);
-      setCount((count) => count + 1);
+      setCount(new_value);
     }
     catch (e) {
       // console.error(e);
