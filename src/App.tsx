@@ -27,12 +27,11 @@ function App() {
     catch (e) {
       console.error(e);
     }
-  }, 3000);
+  }, 1000);
   }
 
 
   const handleClick = async () => {
-    // alert("hola")
     if(!account) return;
     const new_value = count + 1;
     // const payload   = {
