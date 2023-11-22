@@ -1,9 +1,77 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { WalletSelector } from "@aptos-labs/wallet-adapter-ant-design";
+import { Types, AptosClient, Provider, Network } from 'aptos';
+import { useWallet } from '@aptos-labs/wallet-adapter-react';
+import "@aptos-labs/wallet-adapter-ant-design/dist/index.css";
+
 
 function App() {
   const [address, setAddress] = useState<string | null>(null);
   const [count, setCount] = useState(0);
+  const provider = new Provider(Network.DEVNET);
+  const { account, signTransaction, signAndSubmitTransaction } = useWallet();
+
+  const moduleAddress = "0xa88897f762d534368fd752ddc32c1190105b3b612f805efd83498a7d5904f446";
+  const fetchCounter = async () => {
+    if (!account) return;
+
+    try {
+      const counterResource = await provider.getAccountResource(moduleAddress, `${moduleAddress}::CounterPackage::GlobalCounter`);
+      console.log(counterResource);
+      const counter = (counterResource as any).data.counter as number;
+      setCount(counter);
+      setAddress(account.address);
+    }
+    catch (e) {
+      console.error(e);
+    }
+  }
+
+
+  const handleClick = async () => {
+    // alert("hola")
+    if(!account) return;
+    const new_value = count + 1;
+    // const payload   = {
+    //   type: "entry_function_payload",
+    //   function: `${moduleAddress}::Counter::click`,
+    //   type_arguments:[],
+    //   arguments: [],
+    // };
+    const payload = {
+      type: "entry_function_payload",
+      function: `${moduleAddress}::CounterPackage::click`,
+      type_arguments: [],
+      arguments: [],
+    };
+    console.log(payload);
+    // const entryFunctionPayload = new TxnBuilderTypes.Tra
+    // const raw = await provider.generateTransactionData(account.address, entryFunctionPayload);
+    try{
+      // const response = await signAndSubmitTransaction({
+      //   type: "entry_function_payload",
+      //   function: `${moduleAddress}::Counter::click`,
+      //   type_arguments:[],
+      //   arguments: [],
+      // });
+      // alert("error1 "+ response)
+      // await provider.waitForTransaction(response.hash);
+      // console.log(response);
+      // setCount(new_value);
+      const response = await signAndSubmitTransaction(payload);
+      await provider.waitForTransaction(response.hash);
+      setCount((count) => count + 1);
+    }
+    catch (e) {
+      // console.error(e);
+      console.error("Error signing and submitting transaction:", e);
+      console.error("Payload:", payload);
+    }
+  }
+
+  React.useEffect(() => {
+    fetchCounter();
+  }, [account?.address]);
 
   /**
    * Initiate the wallet connection
@@ -18,59 +86,40 @@ function App() {
       // Handle error (show a message to the user, etc.)
     }
   };
-  if (address === null) {
-    return (
-      <div className="container mt-5 text-center">
-        <h1 className="mb-4">Connect your wallet</h1>
-        {address ? (
-          <div>
-            <p className="lead">Connected Account Address:</p>
-            <code className="h4">{address}</code>
-          </div>
-        ) : (
-          <div>
-            {/* <p className="lead">Connect your wallet to get started</p> */}
-            <button className="btn btn-primary btn-lg" onClick={connectWallet}>
-              Connect Wallet
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  }
-//   return (
-//     <div className="App">
-//       {address ? (
-//         <p>Account Address: <code>{address}</code></p>
-//       ) : (
-//         <div className="text-center my-5">
-//         <button className="btn btn-primary mx-3" onClick={connectWallet}>Connect Wallet</button>
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
 
-  // const connectWallet = useState(false);
-  else {
-  return (
-    <div className="container my-5">
-      <div className="card text-center my-5">
-        <div className="card-body">
-          <h1>Counter</h1>
-          <div className="my-5">
-            <h2 className="my-5">{count}</h2>
-            <button className="btn btn-success mx-3" 
-            onClick={() => setCount(count + 1)}
-            style={{ borderRadius: '50%', width: '120px', height: '120px', padding: '0' }}>
-              Increment Counter
-              </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-}
+  
+    return (
+      <div>
+        {!address ? (
+          <div className="container mt-5 text-center">
+            <h1 className="mb-4">Connect your wallet</h1>
+            {address ? (
+              <div>
+                <p className="lead">Connected Account Address:</p>
+                <code className="h4">{address}</code>
+              </div>
+            ) : (
+              <div>
+                <WalletSelector />
+              </div>
+            )}</div>) : (<div className="container my-5">
+              <div className="card text-center my-5">
+                <div className="card-body">
+                  <h1>Counter</h1>
+                  <div className="my-5">
+                    <h2 className="my-5">{count}</h2>
+                    <button className="btn btn-success mx-3"
+                      onClick={handleClick}
+                      style={{ borderRadius: '50%', width: '120px', height: '120px', padding: '0' }}>
+                      Increment Counter
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div> )}
+          </div>)
+
+  }
+ 
 
 export default App;
